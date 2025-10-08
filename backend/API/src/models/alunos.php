@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/cursos.php'; 
+require_once __DIR__ . '/cursos.php';
 
 class alunos implements JsonSerializable
 {
     public function __construct(
-        private int $id,
-        private string $nome,
-        private int $idade,
-        private cursos $cursos
+        private ?int $id = null,
+        private string $nome = '',
+        private int $idade = 0,
+        private cursos $cursos = new cursos()
     ) {
     }
 
@@ -21,12 +21,12 @@ class alunos implements JsonSerializable
             'nome' => $this->getnome(),
             'idade' => $this->getidade(),
             'cursos' => [
-                'curso_id' => $this->cursos->getIdcursos()
+                'curso_id' => $this->cursos->getId()
             ]
         ];
     }
 
-    public function getid(): int|null
+    public function getid(): ?int
     {
         return $this->id;
     }
@@ -42,8 +42,14 @@ class alunos implements JsonSerializable
         return $this->nome;
     }
 
-    public function setnome(string $nome): self
+     public function setNome(string $nome): self
     {
+        // Normalize name
+        $nome = trim($nome);
+        $nome = mb_strtolower($nome, 'UTF-8');
+        $nome = preg_replace('/\s+/', ' ', $nome);
+        $nome = mb_convert_case($nome, MB_CASE_TITLE, 'UTF-8');
+        
         $this->nome = $nome;
         return $this;
     }

@@ -1,5 +1,6 @@
 <?php
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 /**
  * Essa classe Router foi baixada do repositório oficial do GitHub, utilizada para fazer o roteamento das requisições na API.
  * Link do repositório: https://github.com/bramus/router

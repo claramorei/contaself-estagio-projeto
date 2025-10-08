@@ -1,6 +1,6 @@
 <?php
-require_once __DIR__ . "/../http/response.php";
-require_once __DIR__ . "/../utils/logger.php";
+require_once __DIR__ . "/../../http/response.php";
+require_once __DIR__ . "/../../utils/logger.php";
 
 class Database
 {

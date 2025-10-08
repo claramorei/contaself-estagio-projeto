@@ -1,0 +1,154 @@
+/* 🌟 Estilo Geral */
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background: #f5f7fa;
+    color: #333;
+    margin: 0;
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* 🏷️ Cabeçalhos */
+h1 {
+    color: #0077cc;
+    margin-bottom: 30px;
+    text-align: center;
+}
+
+h2 {
+    color: #005fa3;
+    margin-top: 40px;
+    margin-bottom: 15px;
+    border-left: 5px solid #0077cc;
+    padding-left: 10px;
+}
+
+h3 {
+    color: #004c80;
+    margin-bottom: 10px;
+}
+
+/* 🧾 Formulários */
+form {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 30px;
+    width: 100%;
+    max-width: 500px;
+}
+
+label {
+    display: block;
+    margin-bottom: 12px;
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="number"],
+select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    margin-top: 5px;
+    font-size: 15px;
+    box-sizing: border-box;
+    transition: 0.3s;
+}
+
+input:focus,
+select:focus {
+    border-color: #0077cc;
+    outline: none;
+    box-shadow: 0 0 5px rgba(0, 119, 204, 0.3);
+}
+
+/* 🖱️ Botões */
+button {
+    background: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+    margin-top: 5px;
+}
+
+button:hover {
+    background: #005fa3;
+}
+
+span[id^="msg"] {
+    display: block;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #0077cc;
+}
+
+/* 📋 Tabelas */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    max-width: 800px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 40px;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    background-color: #0077cc;
+    color: white;
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: #f1faff;
+}
+
+/* 📊 Relatórios */
+#relatorios {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    justify-content: center;
+    width: 100%;
+}
+
+#relatorios div {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    width: 380px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 📱 Responsividade */
+@media (max-width: 768px) {
+    body {
+        padding: 20px;
+    }
+
+    form, table, #relatorios div {
+        width: 100%;
+    }
+
+    table th, table td {
+        font-size: 14px;
+        padding: 10px;
+    }
+}

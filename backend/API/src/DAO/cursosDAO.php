@@ -48,7 +48,7 @@ class cursosDAO
         $query = 'UPDATE cursos SET nome = :nome WHERE id = :id';
         $statement = Database::getConnection()->prepare($query);
         $statement->bindValue(':nome', $curso->getNomecursos(), PDO::PARAM_STR);
-        $statement->bindValue(':id', $curso->getIdcursos(), PDO::PARAM_INT);
+        $statement->bindValue(':id', $curso->getId(), PDO::PARAM_INT);
         $statement->execute();
 
         return $statement->rowCount() > 0;

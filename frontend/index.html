@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestão de Alunos e Cursos</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Gestão de Alunos e Cursos</h1>
+
+    <h2>Cadastrar Curso</h2>
+    <form id="formCurso">
+        <label>Nome do Curso:
+            <input type="text" name="nome" required>
+        </label>
+        <button type="submit">Cadastrar Curso</button>
+        <span id="msgCurso"></span>
+    </form>
+
+    <h2>Cadastrar Aluno</h2>
+    <form id="formAluno">
+        <label>Nome do Aluno:
+            <input type="text" name="nome" required>
+        </label>
+        <label>Idade:
+            <input type="number" name="idade" min="15" max="99" required>
+        </label>
+        <label>Curso:
+            <select name="curso_id" id="selectCurso" required></select>
+        </label>
+        <button type="submit">Cadastrar Aluno</button>
+        <span id="msgAluno"></span>
+    </form>
+
+   <h2>Listar Alunos</h2>
+<form id="formFiltro">
+    <label>Filtrar por nome do curso:
+        <input type="text" name="curso">
+    </label>
+    <label>Ou por ID do curso:
+        <input type="number" name="curso_id" min="1">
+    </label>
+    <button type="submit">Filtrar</button>
+</form>
+
+<!-- Main table -->
+<table id="tabelaAlunos">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Idade</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Relatórios</h2>
+<div id="relatorios">
+    <div>
+        <h3>Total de Alunos por Curso</h3>
+        <table id="tabelaTotalAlunos">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Total de Alunos</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div>
+        <h3>Média de Idade por Curso</h3>
+        <table id="tabelaMediaIdade">
+            <thead>
+                <tr>
+                    <th>Curso</th>
+                    <th>Média de Idade</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+    <script>
+        const API = 'http://localhost/contaself-estagio-projeto/backend/API';
+
+        function mostrarMensagem(elementId, mensagem, sucesso) {
+            const elemento = document.getElementById(elementId);
+            if (!elemento) {
+                console.error(`Elemento com id ${elementId} não encontrado`);
+                return;
+            }
+            elemento.textContent = mensagem;
+            elemento.className = sucesso ? 'success' : 'error';
+            setTimeout(() => {
+                elemento.textContent = '';
+                elemento.className = '';
+            }, 3500);
+        }
+
+      document.getElementById('formCurso').onsubmit = async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const nome = formData.get('nome');
+    
+    try {
+        const payload = {
+            curso: {
+                nome: nome
+            }
+        };
+
+        console.log('Enviando payload:', payload); // Debug
+
+        const response = await fetch(`${API}/cursos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        console.log('Resposta:', result); // Debug
+
+        if (response.ok && result.success) {
+            mostrarMensagem('msgCurso', 'Curso cadastrado com sucesso!', true);
+            this.reset();
+            await carregarCursos();
+        } else {
+            mostrarMensagem('msgCurso', `Erro: ${result.message || 'Não foi possível cadastrar'}`, false);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarMensagem('msgCurso', 'Erro de conexão com a API', false);
+    }
+};
+
+    document.getElementById('formAluno').onsubmit = async function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const cursoSelect = document.querySelector('#selectCurso');
+    const cursoOption = cursoSelect.options[cursoSelect.selectedIndex];
+    
+      const normalizedName = formData.get('nome')
+        .trim()
+        .toLowerCase()
+        .split(' ')
+        .filter(word => word.length > 0)
+        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    
+    const payload = { 
+        aluno: {
+            nome: normalizedName,
+            idade: parseInt(formData.get('idade')),
+            cursos: {
+                id: parseInt(cursoOption.value),
+                nome: cursoOption.textContent
+            }
+        }
+    };
+
+    console.log('Enviando payload:', payload); // Debug
+
+    try {
+        const response = await fetch(`${API}/alunos`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        console.log('Resposta:', result); // Debug
+
+        if (response.ok && result.success) {
+            mostrarMensagem('msgAluno', 'Aluno cadastrado com sucesso!', true);
+            this.reset();
+            await listarAlunos();
+        } else {
+            mostrarMensagem('msgAluno', `Erro: ${result.message || 'Não foi possível cadastrar'}`, false);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarMensagem('msgAluno', 'Erro de conexão com a API', false);
+    }
+};
+
+      async function carregarCursos() {
+    try {
+        const response = await fetch(`${API}/cursos`);
+        const result = await response.json();
+        
+        console.log('Resposta cursos:', result); // Debug
+
+        const select = document.getElementById('selectCurso');
+        // Limpa as opções existentes
+        select.innerHTML = '<option value="">Selecione um curso</option>';
+
+        // Verifica se temos cursos para adicionar
+        if (response.ok && result.success && result.data?.cursos) {
+            result.data.cursos.forEach(curso => {
+                const opt = document.createElement('option');
+                opt.value = curso.id;
+                opt.textContent = curso.nome;
+                select.appendChild(opt);
+            });
+        } else {
+            console.warn('Nenhum curso encontrado ou formato inválido:', result);
+        }
+    } catch (error) {
+        console.error('Erro ao carregar cursos:', error);
+        mostrarMensagem('msgAluno', 'Erro ao carregar lista de cursos', false);
+    }
+}
+
+async function listarAlunos() {
+    try {
+        // Get filter values
+        const formFiltro = document.getElementById('formFiltro');
+        const cursoPorNome = formFiltro.querySelector('[name="curso"]').value.trim();
+        const cursoPorId = formFiltro.querySelector('[name="curso_id"]').value.trim();
+        
+        // Build URL with filters
+        let url = `${API}/alunos`;
+        if (cursoPorNome || cursoPorId) {
+            const params = [];
+            if (cursoPorNome) params.push(`curso=${encodeURIComponent(cursoPorNome)}`);
+            if (cursoPorId) params.push(`curso_id=${cursoPorId}`);
+            url += '?' + params.join('&');
+        }
+
+        console.log('URL da requisição:', url); // Debug
+
+        const response = await fetch(url);
+        const result = await response.json();
+        
+        console.log('Resposta:', result); // Debug
+
+        const tbody = document.querySelector('#tabelaAlunos tbody');
+        tbody.innerHTML = '';
+
+     if (response.ok && result.success && result.data?.alunos) {
+            result.data.alunos.forEach(aluno => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${aluno.id || ''}</td>
+                    <td>${aluno.nome || ''}</td>
+                    <td>${aluno.idade || ''}</td>
+                    <td>
+                        <button onclick="deleteAluno(${aluno.id})" class="btn-delete">
+                            Excluir
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            throw new Error(result.message || 'Erro ao listar alunos');
+        }
+        // ...existing code...
+    } catch (error) {
+        console.error('Erro na listagem:', error);
+        mostrarMensagem('msgFiltro', `Erro ao listar alunos: ${error.message}`, false);
+    }
+}
+// Update form handler
+document.getElementById('formFiltro').onsubmit = function(e) {
+    e.preventDefault();
+    listarAlunos();
+};
+async function deleteAluno(id) {
+    if (!confirm('Tem certeza que deseja excluir este aluno?')) return;
+
+    try {
+        const response = await fetch(`${API}/alunos/${id}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const result = await response.json();
+        console.log('Delete response:', result); // Debug
+
+        if (response.ok && result.success) {
+            mostrarMensagem('msgFiltro', 'Aluno excluído com sucesso!', true);
+            await listarAlunos();
+        } else {
+            throw new Error(result.message || 'Erro ao excluir aluno');
+        }
+    } catch (error) {
+        console.error('Erro ao excluir:', error);
+        mostrarMensagem('msgFiltro', `Erro ao excluir aluno: ${error.message}`, false);
+    }
+}
+
+
+async function carregarRelatorios() {
+    try {
+        // Total de alunos por curso
+        const responseTotal = await fetch(`${API}/alunos/total-por-curso`);
+        const resultTotal = await responseTotal.json();
+        
+        console.log('Resposta total:', resultTotal); // Debug
+
+        const tbodyTotal = document.querySelector('#tabelaTotalAlunos tbody');
+        tbodyTotal.innerHTML = '';
+
+        if (responseTotal.ok && resultTotal.success) {
+            resultTotal.data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.curso_nome || 'Sem curso'}</td>
+                    <td>${item.total_alunos}</td>
+                `;
+                tbodyTotal.appendChild(tr);
+            });
+        }
+
+        // Média de idade por curso
+        const responseMedia = await fetch(`${API}/alunos/media-idade-por-curso`);
+        const resultMedia = await responseMedia.json();
+        
+        console.log('Resposta média:', resultMedia); // Debug
+
+        const tbodyMedia = document.querySelector('#tabelaMediaIdade tbody');
+        tbodyMedia.innerHTML = '';
+
+        if (responseMedia.ok && resultMedia.success) {
+            resultMedia.data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${item.curso_nome || 'Sem curso'}</td>
+                    <td>${Number(item.media_idade || 0).toFixed(1)}</td>
+                `;
+                tbodyMedia.appendChild(tr);
+            });
+        }
+    } catch (error) {
+        console.error('Erro ao carregar relatórios:', error);
+    }
+}
+
+// Adicione à inicialização
+document.addEventListener('DOMContentLoaded', () => {
+    carregarCursos();
+    listarAlunos();
+    carregarRelatorios(); // Nova função
+});
+    </script>
+
+    <span id="msgFiltro"></span>
+</body>
+</html>
