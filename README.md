@@ -186,6 +186,13 @@ Para testar a API rapidamente, utilize:
 
 ---
 
+## 🎥 Demonstração do Projeto
+
+Você pode assistir ao vídeo de demonstração clicando no link abaixo:
+
+👉 Vídeo de demonstração no Google Drive: https://drive.google.com/file/d/13VAiSDaCbB8lD6DgQUUw1MhoMxydkDn7/view?usp=sharing
+
+
 ## 🤝 Suporte
 
 - 🐞 Github: claramorei
