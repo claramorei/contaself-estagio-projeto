@@ -1,4 +1,4 @@
-# 🌸 Sistema de Gestão de Alunos e Cursos
+#  Sistema de Gestão de Alunos e Cursos
 
 Um sistema simples e eficiente para **gerenciamento de alunos e cursos**, desenvolvido em **PHP, MySQL e JavaScript**.
 
@@ -17,7 +17,7 @@ Este projeto facilita o controle de alunos e cursos, oferecendo rotas de API RES
 
 ---
 
-## 💖 Requisitos
+##  Requisitos
 
 Antes de iniciar, verifique se você possui:
 - [XAMPP](https://www.apachefriends.org/) v3.3.0 ou superior  
@@ -27,7 +27,7 @@ Antes de iniciar, verifique se você possui:
 
 ---
 
-## 🌺 Instalação
+##  Instalação
 
 ### 🧩 1. Banco de Dados
 
@@ -126,7 +126,7 @@ private static $password = '';
     Remove um aluno pelo ID.
     ```bash
     curl -X DELETE http://localhost/contaself-estagio-projeto/backend/API/alunos/1
-    ```
+    
   ```
 
 ### 📊 Relatórios
